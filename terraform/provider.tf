@@ -6,12 +6,12 @@ terraform {
     }
   }
 
-  backend "s3" {
-    bucket         = "erraformjenk"
-    key            = "catalogue"
-    region         = "us-east-1"
-    dynamodb_table = "daws76s-locking-dev"
-  }
+  # backend "s3" {
+  #   bucket         = "erraformjenk"
+  #   key            = "catalogue"
+  #   region         = "us-east-1"
+  #   dynamodb_table = "daws76s-locking-dev"
+  # }
 }
 provider "aws" {
   region = "us-east-1"
