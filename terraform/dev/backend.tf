@@ -1,4 +1,4 @@
 bucket = "terraformjenk"
-key    = "multienv"
+key    = "catalogue"
 region = "us-east-1"
 dynamodb_table = "daws76s-locking-dev"
