@@ -24,3 +24,7 @@ variable "tags" {
     Component = "app-alb"
   }
 }
+
+variable app_version {
+  
+}
