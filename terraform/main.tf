@@ -1,5 +1,5 @@
 resource "aws_lb_target_group" "catalogue" {
-  name     = "${local.ec2_name}-${var.environment}"
+  name     = "${local.ec2_name}-${var.tags.Component}"
   port     = 8080
   protocol = "HTTP"
   vpc_id   = data.aws_ssm_parameter.vpc_id.value
@@ -66,12 +66,13 @@ resource "aws_ec2_instance_state" "catalogue" {
 resource "aws_ami_from_instance" "catalogue" {
   name               = "${local.ec2_name}-${var.tags.Component}-${local.current_time}"
   source_instance_id = module.catalogue.id
+  depends_on = [ aws_ec2_instance_state.catalogue ]
 }
 
 resource "null_resource" "catalogue_delete" {
   # Changes to any instance of the cluster requires re-provisioning
   triggers = {
-    instance_id = aws_ami_from_instance.catalogue.id
+    instance_id = module.catalogue.id
   }
 
   provisioner "local-exec" {
@@ -79,7 +80,7 @@ resource "null_resource" "catalogue_delete" {
     command = "aws ec2 terminate-instances --instance-ids ${module.catalogue.id}"
   }
 
-  depends_on = [ aws_ami_from_instance.catalogue, null_resource.catalogue, aws_ec2_instance_state.catalogue ]
+  depends_on = [ aws_ami_from_instance.catalogue ]
 }
 
 resource "aws_launch_template" "catalogue" {
@@ -88,6 +89,7 @@ resource "aws_launch_template" "catalogue" {
   image_id = aws_ami_from_instance.catalogue.id
   instance_initiated_shutdown_behavior = "terminate"
   instance_type = "t2.micro"
+  update_default_version = true
 
   vpc_security_group_ids = [data.aws_ssm_parameter.catalogue_sg_id.value]
 
